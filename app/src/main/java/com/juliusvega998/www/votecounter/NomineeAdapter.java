@@ -1,5 +1,7 @@
 package com.juliusvega998.www.votecounter;
 
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -7,6 +9,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Created by VegaCentre on 4/21/2017.
@@ -14,7 +17,7 @@ import java.util.ArrayList;
 
 public class NomineeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
     private ArrayList<Nominee> nominees;
-    private ArrayList<Integer> stack;
+    private ArrayList<Nominee> stack;
 
     public NomineeAdapter() {
         super();
@@ -22,11 +25,11 @@ public class NomineeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         this.stack = new ArrayList<>();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+    private static class ViewHolder extends RecyclerView.ViewHolder {
         public TextView name;
-        public TextView votes;
+        private TextView votes;
 
-        public ViewHolder(View itemView) {
+        private ViewHolder(View itemView) {
             super(itemView);
             name = (TextView) itemView.findViewById(R.id.name);
             votes = (TextView) itemView.findViewById(R.id.votes);
@@ -40,7 +43,7 @@ public class NomineeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     }
 
     @Override
-    public void onBindViewHolder(RecyclerView.ViewHolder holder, final int position) {
+    public void onBindViewHolder(final RecyclerView.ViewHolder holder, int position) {
         final TextView votes = ((ViewHolder) holder).votes;
         votes.setText(Integer.toString(nominees.get(position).getVotes()));
 
@@ -49,8 +52,39 @@ public class NomineeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             @Override
             public void onClick(View v) {
                 votes.setText(Integer.toString(Integer.parseInt(votes.getText().toString())+1));
-                stack.add(position);
-                nominees.get(position).vote();
+                stack.add(nominees.get(holder.getAdapterPosition()));
+                nominees.get(holder.getAdapterPosition()).vote();
+            }
+        });
+
+        ((ViewHolder) holder).name.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(v.getContext());
+                builder.setTitle(R.string.delete_dialog_title);
+                if(nominees.get(holder.getAdapterPosition()).getVotes() > 0) {
+                    builder.setMessage(R.string.delete_dialog_desc_with_votes);
+                } else {
+                    builder.setMessage(R.string.delete_dialog_desc_without_votes);
+                }
+
+                builder.setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        Nominee n = nominees.remove(holder.getAdapterPosition());
+                        stack.removeAll(Collections.singleton(n));
+                        NomineeAdapter.this.notifyDataSetChanged();
+                    }
+                }).setNegativeButton(android.R.string.no, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+                builder.show();
+
+                return true;
             }
         });
     }
@@ -61,8 +95,8 @@ public class NomineeAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     public void undo() {
         if(stack.size() > 0) {
-            int position = stack.remove(stack.size() - 1);
-            nominees.get(position).undo();
+            Nominee n = stack.remove(stack.size() - 1);
+            n.undo();
         }
     }
 

@@ -10,6 +10,6 @@
         android:layout_height="wrap_content"
         android:layout_margin="20dp"
         android:ems="10"
-        android:hint="Enter nominee name"
+        android:hint="@string/add_nominee_hint"
         android:inputType="textPersonName" />
 </LinearLayout>

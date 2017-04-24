@@ -1,4 +1,19 @@
 <resources>
     <string name="app_name">Vote Counter</string>
-    <string name="action_settings">Nominees</string>
+
+    <string name="action_settings">About Us</string>
+    <string name="about_us_desc">This app is created for ACSS Elections. If you have any issues while using this application, contact me at julius.inquire@gmail.com</string>
+
+    <string name="reset_dialog_title">Resetting The Votes</string>
+    <string name="reset_dialog_desc">Are you sure you want to reset the votes?</string>
+
+    <string name="delete_dialog_title">Deleting A Nominee</string>
+    <string name="delete_dialog_desc_with_votes">This nominee has votes already. Are you sure you want to delete this nominee?</string>
+    <string name="delete_dialog_desc_without_votes">Are you sure you want to delete this nominee?</string>
+
+    <string name="reset">Reset</string>
+    <string name="undo">Undo</string>
+    <string name="add">Add</string>
+
+    <string name="add_nominee_hint">Enter nominee name here...</string>
 </resources>
